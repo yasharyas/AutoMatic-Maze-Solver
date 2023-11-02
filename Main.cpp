@@ -44,9 +44,9 @@ void printPath(int x, int y) {
 
 void weightedBFS() {
     vector<vector<int>> dist(n + 1, vector<int>(m + 1, INT_MAX)); // Initialize distances to infinity
-    priority_queue<tuple<int, int, int>> pq; // Priority queue for weighted BFS
-    pq.push(make_tuple(0, sx, sy)); // Starting point with cost 0
-    dist[sx][sy] = 0; // Distance to start is 0
+    priority_queue<tuple<int, int, int>> pq; // Prio queue  weighted BFS
+    pq.push(make_tuple(0, sx, sy)); // Starting point cost- 0
+    dist[sx][sy] = 0; // Distance start = 0
 
     while (!pq.empty()) {
         int cost, x, y;
@@ -77,7 +77,7 @@ void weightedBFS() {
 
 void welcome() {
     cout << "Welcome to YSC-Maze! An automatic maze solve program." << endl;
-    cout << "Developed by YURLAK, 2023." << endl;
+    cout << "Developed by Yash Arya, Satvik Ranjan and Chiranjeev Vyas 2023 as DSA Project" << endl;
 }
 
 int main() {
@@ -90,7 +90,7 @@ int main() {
     vis.resize(n + 1, vector<int>(m + 1, 0));
     parent.resize(n + 1, vector<pair<int, int>>(m + 1, {-1, -1}));
 
-    cout << "\033[32m[INPUT YOUR MAZE WITH COSTS BELOW]\033[0m" << endl;
+    cout << "\033[32m[INPUT YOUR MAZE BELOW]\033[0m" << endl;
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= m; j++) {
             cin >> a[i][j];
