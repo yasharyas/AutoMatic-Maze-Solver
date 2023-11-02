@@ -2,12 +2,14 @@
 #include <vector>
 #include <queue>
 #include <tuple>
+#include <limits>  
+#include <climits>
 using namespace std;
 
 int n, m, sx, sy, ex, ey;
-vector<vector<int>> a;
+vector<vector<int>> a; // Maze grid with costs
 vector<vector<int>> vis;
-vector<vector<pair<int, int>>> parent;
+vector<vector<pair<int, int>> > parent;
 int step = 0;
 
 int fx[5] = {0, 1, 0, -1, 0};
@@ -40,27 +42,33 @@ void printPath(int x, int y) {
     step++;
 }
 
-void bfs() {
-    queue<tuple<int, int>> q;
-    q.push(make_tuple(sx, sy));
+void weightedBFS() {
+    vector<vector<int>> dist(n + 1, vector<int>(m + 1, INT_MAX)); // Initialize distances to infinity
+    priority_queue<tuple<int, int, int>> pq; // Priority queue for weighted BFS
+    pq.push(make_tuple(0, sx, sy)); // Starting point with cost 0
+    dist[sx][sy] = 0; // Distance to start is 0
 
-    while (!q.empty()) {
-        int x, y;
-        tie(x, y) = q.front();
-        q.pop();
+    while (!pq.empty()) {
+        int cost, x, y;
+        tie(cost, x, y) = pq.top();
+        pq.pop();
 
         for (int i = 1; i <= 4; i++) {
             int tx = x + fx[i];
             int ty = y + fy[i];
 
-            if (tx >= 1 && tx <= n && ty >= 1 && ty <= m && a[tx][ty] == 0) {
-                a[tx][ty] = 3;  // Mark as visited
-                q.push(make_tuple(tx, ty));
-                parent[tx][ty] = make_pair(x, y);
+            if (tx >= 1 && tx <= n && ty >= 1 && ty <= m) {
+                int newCost = dist[x][y] + a[tx][ty]; // Compute the cost of moving to the neighbor cell
 
-                if (tx == ex && ty == ey) {
-                    printPath(ex, ey);
-                    return;
+                if (newCost < dist[tx][ty]) {
+                    dist[tx][ty] = newCost;
+                    pq.push(make_tuple(newCost, tx, ty));
+                    parent[tx][ty] = make_pair(x, y);
+
+                    if (tx == ex && ty == ey) {
+                        printPath(ex, ey);
+                        return;
+                    }
                 }
             }
         }
@@ -82,7 +90,7 @@ int main() {
     vis.resize(n + 1, vector<int>(m + 1, 0));
     parent.resize(n + 1, vector<pair<int, int>>(m + 1, {-1, -1}));
 
-    cout << "\033[32m[INPUT YOUR MAZE BELOW]\033[0m" << endl;
+    cout << "\033[32m[INPUT YOUR MAZE WITH COSTS BELOW]\033[0m" << endl;
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= m; j++) {
             cin >> a[i][j];
@@ -99,7 +107,7 @@ int main() {
         return 0;
     }
 
-    bfs();
+    weightedBFS();
 
     cout << "\033[32m[RESULT OUTPUT]\033[0m" << endl;
     printPath(ex, ey);
