@@ -1,115 +1,65 @@
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <tuple>
-#include <limits>
-
+#include<bits/stdc++.h>
 using namespace std;
-
-int n, m, sx, sy, ex, ey;
-vector<vector<int>> a;
-vector<vector<int>> vis;
-vector<vector<pair<int, int>> > parent;
-int step = 0;
-
-int fx[5] = {0, 1, 0, -1, 0};
-int fy[5] = {0, 0, 1, 0, -1};
-
-void printMaze() {
-    for (int i = 1; i <= n; i++) {
-        for (int j = 1; j <= m; j++) {
-            if (i == sx && j == sy)
-                cout << "\033[32mS\033[0m";  // Start position
-            else if (i == ex && j == ey)
-                cout << "\033[32mE\033[0m";  // End position
-            else if (a[i][j] == 2)
-                cout << "\033[31m2\033[0m";  // Path
-            else if (a[i][j] == 3)
-                cout << "0";  // Visited
-            else
-                cout << a[i][j];  // Walls or unvisited
-        }
-        cout << endl;
-    }
+int n,m,sx,sy,ex,ey;
+int a[110][110];
+int head=1,tail=1,step=0;
+int q[40000][4];
+int fx[5]={0,1,0,-1,0};
+int fy[5]={0,0,1,0,-1};
+int tx,ty;
+void print(int k){
+	if(q[k][3]!=0) print(q[k][3]);
+	a[q[k][1]][q[k][2]]=2;
+	cout<<"("<<q[k][1]<<","<<q[k][2]<<")";
+	if(k!=tail) cout<<"->";
+	step++;
 }
-
-void printPath(int x, int y) {
-    if (x == sx && y == sy) return;
-    int px = parent[x][y].first;
-    int py = parent[x][y].second;
-    printPath(px, py);
-    a[x][y] = 2;
-    step++;
+void welcome(){
+	cout<<"Welcome to YSC-Maze! An automatic maze solve program.\nDeveloped by Yash Arya, Satvik Ranjan, and Chiranjeev Vyas in 2023 as a DSA Project"<<endl;
 }
-
-void BFS() {
-    queue<tuple<int, int>> q;
-    q.push(make_tuple(sx, sy));
-    vis[sx][sy] = 1;
-
-    while (!q.empty()) {
-        int x, y;
-        tie(x, y) = q.front();
-        q.pop();
-
-        for (int i = 1; i <= 4; i++) {
-            int tx = x + fx[i];
-            int ty = y + fy[i];
-
-            if (tx >= 1 && tx <= n && ty >= 1 && ty <= m && !vis[tx][ty] && a[tx][ty] != 1) {
-                q.push(make_tuple(tx, ty));
-                vis[tx][ty] = 1;
-                parent[tx][ty] = make_pair(x, y);
-
-                if (tx == ex && ty == ey) {
-                    printPath(ex, ey);
-                    return;
-                }
-            }
-        }
-    }
-}
-
-void welcome() {
-    cout << "Welcome to YSC-Maze! An automatic maze solve program." << endl;
-    cout << "Developed by Yash Arya, Satvik Ranjan, and Chiranjeev Vyas in 2023 as a DSA Project" << endl;
-}
-
-int main() {
-    welcome();
-
-    cout << "\033[32m[INPUT x AND y]\033[0m";
-    cin >> n >> m;
-
-    a.resize(n + 1, vector<int>(m + 1, 0));
-    vis.resize(n + 1, vector<int>(m + 1, 0));
-    parent.resize(n + 1, vector<pair<int, int>>(m + 1, {-1, -1}));
-
-    cout << "\033[32m[INPUT YOUR MAZE BELOW]\033[0m" << endl;
-    for (int i = 1; i <= n; i++) {
-        for (int j = 1; j <= m; j++) {
-            cin >> a[i][j];
-        }
-    }
-
-    cout << "\033[32m[INPUT START]\033[0m";
-    cin >> sx >> sy;
-    cout << "\033[32m[INPUT END]\033[0m";
-    cin >> ex >> ey;
-
-    if (a[sx][sy] == 1 || a[ex][ey] == 1) {
-        cout << "Invalid start or end position on a wall." << endl;
-        return 0;
-    }
-
-    BFS();
-
-    cout << "\033[32m[RESULT OUTPUT]\033[0m" << endl;
-    printPath(ex, ey);
-    cout << endl;
-
-    cout << "\033[32m[MAZE]\033[0m" << endl;
-    printMaze();
-
-    cout << "\033[32mSteps: " << step << "\033[0m" << endl;
+int main(){
+	welcome();
+	printf("\033[32m%s\033[0m","[INPUT x AND y]");
+	cin>>n>>m;
+	printf("\033[32m%s\033[0m\n","[INPUT YOUR MAZE BELOW]");
+	for(int i=1;i<=n;i++){
+		for(int j=1;j<=m;j++){
+			cin>>a[i][j];
+		}
+	}
+	printf("\033[32m%s\033[0m","[INPUT START]");
+	cin>>sx>>sy;
+	printf("\033[32m%s\033[0m","[INPUT END]");
+	cin>>ex>>ey;
+	q[1][1]=sx;q[1][2]=sy;q[1][3]=0;
+	
+	while(head<=tail){
+		
+		for(int i=1;i<=4;i++){
+			tx=q[head][1]+fx[i];
+			ty=q[head][2]+fy[i];
+			
+			if(tx>=1&&tx<=n&&ty>=1&&ty<=m&&a[tx][ty]==0){
+				a[tx][ty]=3;
+				tail++;
+				q[tail][1]=tx;
+				q[tail][2]=ty;
+				q[tail][3]=head;
+				if(tx==ex&&ty==ey) break;
+			}
+		}
+		head++;
+	}
+	printf("\033[32m%s\033[0m\n","[RESULT OUTPUT]");
+	print(tail);
+	printf("\n\033[32m%s\033[0m\n","[MAZE]");
+	for(int i=1;i<=n;i++){
+		for(int j=1;j<=m;j++){
+			if(a[i][j]==2) printf("\033[31m%d\033[0m",a[i][j]);
+			else if(a[i][j]==3) cout<<0;
+			else cout<<a[i][j];
+		}
+		cout<<endl;
+	}
+	printf("\033[32mSteps:%d\033[0m\n",step-1);
 }
