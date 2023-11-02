@@ -2,12 +2,12 @@
 #include <vector>
 #include <queue>
 #include <tuple>
-#include <limits>  
-#include <climits>
+#include <limits>
+
 using namespace std;
 
 int n, m, sx, sy, ex, ey;
-vector<vector<int>> a; // Maze grid with costs
+vector<vector<int>> a;
 vector<vector<int>> vis;
 vector<vector<pair<int, int>> > parent;
 int step = 0;
@@ -42,33 +42,28 @@ void printPath(int x, int y) {
     step++;
 }
 
-void weightedBFS() {
-    vector<vector<int>> dist(n + 1, vector<int>(m + 1, INT_MAX)); // Initialize distances to infinity
-    priority_queue<tuple<int, int, int>> pq; // Prio queue  weighted BFS
-    pq.push(make_tuple(0, sx, sy)); // Starting point cost- 0
-    dist[sx][sy] = 0; // Distance start = 0
+void BFS() {
+    queue<tuple<int, int>> q;
+    q.push(make_tuple(sx, sy));
+    vis[sx][sy] = 1;
 
-    while (!pq.empty()) {
-        int cost, x, y;
-        tie(cost, x, y) = pq.top();
-        pq.pop();
+    while (!q.empty()) {
+        int x, y;
+        tie(x, y) = q.front();
+        q.pop();
 
         for (int i = 1; i <= 4; i++) {
             int tx = x + fx[i];
             int ty = y + fy[i];
 
-            if (tx >= 1 && tx <= n && ty >= 1 && ty <= m) {
-                int newCost = dist[x][y] + a[tx][ty]; // Compute the cost of moving to the neighbor cell
+            if (tx >= 1 && tx <= n && ty >= 1 && ty <= m && !vis[tx][ty] && a[tx][ty] != 1) {
+                q.push(make_tuple(tx, ty));
+                vis[tx][ty] = 1;
+                parent[tx][ty] = make_pair(x, y);
 
-                if (newCost < dist[tx][ty]) {
-                    dist[tx][ty] = newCost;
-                    pq.push(make_tuple(newCost, tx, ty));
-                    parent[tx][ty] = make_pair(x, y);
-
-                    if (tx == ex && ty == ey) {
-                        printPath(ex, ey);
-                        return;
-                    }
+                if (tx == ex && ty == ey) {
+                    printPath(ex, ey);
+                    return;
                 }
             }
         }
@@ -77,7 +72,7 @@ void weightedBFS() {
 
 void welcome() {
     cout << "Welcome to YSC-Maze! An automatic maze solve program." << endl;
-    cout << "Developed by Yash Arya, Satvik Ranjan and Chiranjeev Vyas 2023 as DSA Project" << endl;
+    cout << "Developed by Yash Arya, Satvik Ranjan, and Chiranjeev Vyas in 2023 as a DSA Project" << endl;
 }
 
 int main() {
@@ -107,7 +102,7 @@ int main() {
         return 0;
     }
 
-    weightedBFS();
+    BFS();
 
     cout << "\033[32m[RESULT OUTPUT]\033[0m" << endl;
     printPath(ex, ey);
